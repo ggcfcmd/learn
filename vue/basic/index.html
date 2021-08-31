@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app">
+      <input type="text" v-model="message" />
+      <input type="text" v-model="message2" />
+      <p>message is {{ message }}</p>
+      <div v-if="computedMsg()">message 长度大于5</div>
+      <div v-else>message 长度小于等于5</div>
+    </div>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: "#app",
+      data: {
+        message: 1,
+        message2: 2,
+        html: 1213,
+      },
+      computed: {
+        computedMsg() {
+          return function () {
+            console.log("computed msg");
+            return this.message.length >= 5;
+          };
+        },
+      },
+      methods: {
+        changeMsg() {
+          console.log("change msg");
+          return this.message2.length >= 5;
+        },
+      },
+    });
+  </script>
+</html>

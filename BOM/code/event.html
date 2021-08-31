@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="parent" class="flex">
+        parent
+        <p id="child" class="flex">
+            child
+            <span id="son" class="flex">
+                son
+                <a href="https://www.baidu.com">走你</a>
+            </span>
+        </p>
+    </div>
+</body>
+<script src="./event.js">
+
+</script>
+<style>
+    #parent {
+        background-color: bisque;
+        width: 700px;
+        height: 700px;
+    }
+
+    #child {
+        background-color: chocolate;
+        width: 500px;
+        height: 500px;
+    }
+
+    #son {
+        background-color: crimson;
+        width: 300px;
+        height: 300px;
+    }
+
+    .flex {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 20px;
+    }
+</style>
+</html>

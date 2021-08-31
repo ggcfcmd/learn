@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      const Button = {
+        name: "el-button",
+        template: `<Button @click='onClick'>{{ label }}</Button>`,
+        props: {
+          label: {
+            default: "按钮",
+          },
+        },
+        methods: {
+          onClick() {
+            this.$emit("click");
+          },
+        },
+      };
+
+      const XUI = [Button];
+
+      XUI.install = (Vue, options) => {
+        XUI.forEach(({ name, ...component }) => {
+          console.log("log name", name);
+          console.log("log component", component);
+          Vue.component(name, component);
+        });
+      };
+
+      Vue.use(XUI);
+
+      new Vue({
+        el: document.querySelector("#root"),
+        template: `
+          <div>
+            <h1>hello world!</h1>
+            <el-button label="click me!" @click='handleClick'></el-button>
+          </div>
+          `,
+        methods: {
+          handleClick() {
+            console.log("点击生效了~");
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      console.log(Vue.config.optionMergeStrategies);
+      // 保留原合并策略
+      const originalOptionsMergeStrategies = Vue.config.optionMergeStrategies;
+      // 定义exit方法 使用created策略
+      originalOptionsMergeStrategies.exit =
+        originalOptionsMergeStrategies.created;
+
+      // 触发通知 执行exit函数
+      const notify = (name, vm) => {
+        console.log(vm.$options);
+        const lifeCycles = vm.$options[name];
+        if (Array.isArray(lifeCycles) && lifeCycles.length) {
+          lifeCycles.forEach((lc) => lc.call(vm));
+        }
+
+        // 递归子实例触发通知
+        const children = vm.$children;
+        if (Array.isArray(children) && children.length) {
+          children.forEach((child) => notify(name, child));
+        }
+      };
+
+      // 绑定到一个实例
+      const bind = (vm) => {
+        window.addEventListener("visibilitychange", () => {
+          if (document.visibilityState === "hidden") {
+            notify("exit", vm);
+          }
+        });
+      };
+
+      const vm = new Vue({
+        el: document.querySelector("#root"),
+        template: `<h1>hello world</h1>`,
+        exit() {
+          window.open();
+        },
+      });
+
+      bind(vm);
+    </script>
+  </body>
+</html>
