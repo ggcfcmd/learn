@@ -1,0 +1,1 @@
+<view bindtap="changeMessage" class="pageContent">{{ message }}</view>

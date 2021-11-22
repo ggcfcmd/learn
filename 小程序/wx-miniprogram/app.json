@@ -1,0 +1,20 @@
+{
+    "pages": [
+        "pages/pageA/pageA",
+        "pages/pageB/pageB"
+    ],
+    "sitemapLocation": "sitemap.json",
+    "tabBar": {
+        "color": "#000000",
+        "selectedColor": "#00BFFF",
+        "list": [
+            {
+                "pagePath": "pages/pageA/pageA",
+                "text": "页面A"
+            }, {
+                "pagePath": "pages/pageB/pageB",
+                "text": "页面B"
+            }
+        ]
+    }
+}

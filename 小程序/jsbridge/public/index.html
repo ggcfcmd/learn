@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button onclick="openWxApi()">测试页面</button>
+    <script>
+      const eventMap = new Map();
+
+      const ws = new WebSocket("ws://127.160.0.1:8081");
+      ws.onopen = () => {
+        console.log("connection success!");
+      };
+      ws.onmessage = (e) => {
+        console.log("ws message log", e);
+        if (e.data && eventMap.get(e.data)) {
+          const cb = eventMap.get(e.data);
+          cb();
+        }
+      };
+
+      function openWxApi() {
+        const config = {
+          apiName: "openPhoto",
+          success: () => {
+            console.log("我被native调用了");
+          },
+        };
+        sendMessage(config);
+      }
+
+      function sendMessage(config) {
+        let id = "";
+        if (config.success) {
+          id = new Date().getTime().toString();
+          eventMap.set(id, config.success);
+        }
+        let url = `jsBridge://wx.api.${config.apiName}/`;
+        if (id) {
+          url += `?cb=${id}`;
+        }
+        if (!ws) {
+          throw new Error("ws尚未准备完毕");
+        }
+        ws.send(url);
+      }
+    </script>
+  </body>
+</html>

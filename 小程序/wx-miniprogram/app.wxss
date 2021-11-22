@@ -1,0 +1,4 @@
+.pageContent {
+  background-color: azure;
+  color:aqua
+}

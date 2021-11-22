@@ -1,0 +1,5 @@
+<view>
+    <view>{{ name }}</view>
+    <view>{{ age }}</view>
+    <view bindtap="clickMe">{{ message }}</view>
+</view>

@@ -1,0 +1,5 @@
+<view>
+    <view bindtap="changeMessage" class="pageContent">{{ message }}</view>
+    <userInfo name="{{ name }}" age="{{ age }}" bind:click="handleClick" />
+    <vantButton type="primary">第三方组件</vantButton>
+</view>

@@ -1,0 +1,6 @@
+{
+    "usingComponents": {
+        "userInfo": "/components/userInfo/userInfo",
+        "vantButton": "vant-weapp/button"
+    }
+}
