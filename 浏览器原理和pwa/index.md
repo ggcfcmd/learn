@@ -144,3 +144,23 @@ Q：网络请求的耗时是不固定的，如果耗时比较久的话，UI 线�
 
 display：none（不在布局树上）
 visibility：hidden（在布局树上）
+
+#### 触发回流/重排的场景
+
+· 添加/删除可见的 dom 元素
+· 元素位置/尺寸发生变化
+· 页面最开始渲染的时候（无法避免）
+· 浏览器窗口尺寸的变化（resize）
+· 获取一些特定属性的值 offset 系列（比如 offsetTop、offsetLeft）、scroll 系列（scrollTop 等）、client 系列（clientTop、clientLeft）、getComputedStyle()
+
+Q：为什么获取布局信息时会触发重排
+
+因为当你获取布局信息的操作时，浏览器会把最新的值返回给你，而为了保证返回的值是最新的，浏览器会清空当前存储的重排队列
+
+#### 优化
+
+动画 animation 尽量不要用 top、left 等纯方向属性来做，改用 transform
+
+由于每次重排/回流 都会造成额外的消耗，所以大多数浏览器都会通过队列化修改来批量执行优化重排过程
+
+### 绘制
