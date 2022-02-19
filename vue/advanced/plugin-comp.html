@@ -12,11 +12,9 @@
     <script>
       const Button = {
         name: "el-button",
-        template: `<Button @click='onClick'>{{ label }}</Button>`,
+        template: `<button @click="onClick">{{ label }}</button>`,
         props: {
-          label: {
-            default: "按钮",
-          },
+          label: { default: "按钮" },
         },
         methods: {
           onClick() {
@@ -26,28 +24,24 @@
       };
 
       const XUI = [Button];
-
       XUI.install = (Vue, options) => {
         XUI.forEach(({ name, ...component }) => {
-          console.log("log name", name);
-          console.log("log component", component);
           Vue.component(name, component);
         });
       };
 
       Vue.use(XUI);
-
       new Vue({
-        el: document.querySelector("#root"),
+        el: document.getElementById("root"),
         template: `
           <div>
-            <h1>hello world!</h1>
+            <h1>hello world</h1>
             <el-button label="click me!" @click='handleClick'></el-button>
           </div>
-          `,
+        `,
         methods: {
           handleClick() {
-            console.log("点击生效了~");
+            console.log("点击生效");
           },
         },
       });

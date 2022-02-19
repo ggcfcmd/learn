@@ -44,7 +44,7 @@ const course = new Course();
 
 ## Q: 构造函数 不初始化 可以使用么
 
-A: 可以使用
+A: 不可以使用
 
 ## Q: 如果需要使用 如何做兼容
 
@@ -124,6 +124,10 @@ const course2 = new Course();
 
 ## 继承
 
+### 原型链继承
+
+思路：重写原型对象，将父对象的属性方法，作为子对象原型对象的属性和方法
+
 ```js
 // Game类
 function Game() {
@@ -137,23 +141,21 @@ Game.prototype.getName = function () {
 function LOL() {}
 LOL.prototype = new Game();
 LOL.prototype.constructor = LOL;
-
-// 本质：重写原型对象，将父对象的属性方法，作为子对象原型对象的属性和方法
 ```
 
-## 追问 原型链继承有什么缺点
+#### 追问：原型链继承有什么缺点
 
 1. 父类属性一旦赋值给子类的原型属性，此时属性属于子类的共享属性
 2. 实例化子类时无法传参
 
-## 解决方案：构造函数继承（经典继承）
+### 构造函数继承（经典继承）
 
-在子类构造函数内部调用父类构造函数
+思路：在子类构造函数内部调用父类构造函数
 
 ```js
-function Game() {
+function Game(arg) {
   this.name = "lol";
-  this.skin = ["s"];
+  this.skin = arg;
 }
 Game.prototype.getName = function () {
   return this.name;
@@ -165,17 +167,18 @@ function LOL(arg) {
 }
 
 const game3 = new LOL();
-// 解决了共享属性问题&传参问题
 ```
 
-## 原型链上的共享方法无法被读取继承，如何解决
+解决了共享属性问题 & 传参问题
 
-## 组合继承
+#### 追问：原型链上的共享方法无法被读取继承，如何解决
+
+### 组合继承
 
 ```js
 function Game(arg) {
   this.name = "lol";
-  this.skin = ["s"];
+  this.skin = arg;
 }
 Game.prototype.getName = function () {
   return this.name;

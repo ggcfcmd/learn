@@ -8,29 +8,24 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="root"></div>
   </body>
   <script>
-    const empty_mixin = {
+    const emptyMixin = {
       filters: {
         empty: (value) => {
           return value || "--";
         },
       },
     };
-    const vm = new Vue({
-      el: document.querySelector("#app"),
-      mixins: [empty_mixin],
-      data() {
-        return {
-          user: "",
-        };
+
+    new Vue({
+      el: document.querySelector("#root"),
+      mixins: [emptyMixin],
+      data: {
+        user: "111",
       },
-      template: `
-        <h1>hello，{{ user | empty }}</h1>
-        `,
+      template: `<h1>hello, {{ user | empty }}</h1>`,
     });
-    console.log(vm.$options);
-    console.log(vm.$children);
   </script>
 </html>

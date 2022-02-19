@@ -8,34 +8,37 @@
   </head>
   <body>
     <div id="app">
-      <input type="text" v-model="message" />
-      <input type="text" v-model="message2" />
-      <p>message is {{ message }}</p>
-      <div v-if="computedMsg()">message 长度大于5</div>
-      <div v-else>message 长度小于等于5</div>
+      <input v-model="message" />
+      <h1>{{ message }}</h1>
+      <!-- :message="message" -->
+      <base-input v-bind:message.sync="message"></base-input>
     </div>
   </body>
   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <script>
+    Vue.component("base-input", {
+      props: ["message"],
+      computed: {
+        inputListeners: function () {
+          const vm = this;
+          return Object.assign({}, vm.$listeners, {
+            input: function (event) {
+              vm.$emit("update:message", event.target.value);
+            },
+          });
+        },
+      },
+      template: `<input v-model="message" v-on="inputListeners" />`,
+    });
+
     const app = new Vue({
       el: "#app",
       data: {
-        message: 1,
-        message2: 2,
-        html: 1213,
-      },
-      computed: {
-        computedMsg() {
-          return function () {
-            console.log("computed msg");
-            return this.message.length >= 5;
-          };
-        },
+        message: null,
       },
       methods: {
-        changeMsg() {
-          console.log("change msg");
-          return this.message2.length >= 5;
+        handleChange(v) {
+          this.message = v;
         },
       },
     });

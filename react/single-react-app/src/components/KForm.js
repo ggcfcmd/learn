@@ -22,14 +22,11 @@ function KFormCreate(Comp) {
       this.options[field] = option;
       return (InputComp) => (
         <div>
-          {
-            (React.cloneElement(InputComp),
-            {
-              name: field,
-              value: this.state[field] || "",
-              onChange: this.handleChange,
-            })
-          }
+          {React.cloneElement(InputComp, {
+            name: field,
+            value: this.state[field] || "",
+            onChange: this.handleChange,
+          })}
           {this.state[field + "Message"] && (
             <p style={{ color: "red" }}>{this.state[field + "Message"]}</p>
           )}
@@ -70,7 +67,7 @@ function KFormCreate(Comp) {
   };
 }
 
-// @kFormCreate
+@KFormCreate
 class KForm extends React.Component {
   onSubmit = () => {
     console.log("submit");
@@ -98,5 +95,9 @@ class KForm extends React.Component {
     );
   }
 }
+
+// 非装饰器写法 套用多个高阶组件时需要顺序调用 比较繁琐
+// const newKform = KFormCreate(KForm);
+// export default newKform;
 
 export default KForm;

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>debounce</title>
+    <style>
+      #container {
+        width: 100%;
+        height: 200px;
+        line-height: 200px;
+        text-align: center;
+        color: #fff;
+        background-color: #444;
+        font-size: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+  </body>
+  <!-- 触发高频事件n秒内函数只执行一次，如果在n秒内重新触发事件，则重新计算时间 -->
+  <script>
+    let count = 1;
+    const el = document.getElementById("container");
+
+    function getUserAction(e) {
+      console.log(e);
+      el.innerHTML = count++;
+    }
+
+    el.onmousemove = debounce(getUserAction, 3000, false);
+
+    function debounce(func, wait, immediate) {
+      let timeout;
+      return function (...args) {
+        clearTimeout(timeout);
+        // 是否不防抖 立即执行
+        if (immediate) {
+          func.apply(this, args);
+        } else {
+          // 箭头函数可以直接取到上层函数的this 如果是function 需要定义_that （setTimeout中function函数的this默认指向windows）
+          timeout = setTimeout(() => {
+            // 利用剩余函数语法糖获取参数 透传
+            func.apply(this, args);
+          }, wait);
+        }
+      };
+    }
+  </script>
+</html>

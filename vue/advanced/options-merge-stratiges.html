@@ -10,29 +10,30 @@
   <body>
     <div id="root"></div>
     <script>
-      console.log(Vue.config.optionMergeStrategies);
-      // 保留原合并策略
-      const originalOptionsMergeStrategies = Vue.config.optionMergeStrategies;
-      // 定义exit方法 使用created策略
-      originalOptionsMergeStrategies.exit =
-        originalOptionsMergeStrategies.created;
+      // 写一个生命周期
+      // initial value { a, b, c, d }
+      // component mixins -> { a, b, c } & { a, b, c, d } -> finally result
+      // 1. 有自己默认的合并策略 2. 可以给用户自行的拓展 3. 全局/局部使用
 
-      // 触发通知 执行exit函数
+      // 获取原合并策略
+      const originalOptionMergeStrategies = Vue.config.optionMergeStrategies;
+      originalOptionMergeStrategies.exit =
+        originalOptionMergeStrategies.created;
+
       const notify = (name, vm) => {
-        console.log(vm.$options);
         const lifeCycles = vm.$options[name];
+        // 因为自定义的钩子复用created生命周期的策略 当mixins和组件都存在同名生命周期时
+        // 会合并为一个数组并全部调用 混入对象的钩子会在组件自身钩子之前调用 此处做数组判断
         if (Array.isArray(lifeCycles) && lifeCycles.length) {
           lifeCycles.forEach((lc) => lc.call(vm));
         }
 
-        // 递归子实例触发通知
         const children = vm.$children;
         if (Array.isArray(children) && children.length) {
           children.forEach((child) => notify(name, child));
         }
       };
 
-      // 绑定到一个实例
       const bind = (vm) => {
         window.addEventListener("visibilitychange", () => {
           if (document.visibilityState === "hidden") {
@@ -43,9 +44,9 @@
 
       const vm = new Vue({
         el: document.querySelector("#root"),
-        template: `<h1>hello world</h1>`,
+        template: `<h1>hello world!</h1>`,
         exit() {
-          window.open();
+          localStorage.setItem("hahaha", "哈哈哈");
         },
       });
 

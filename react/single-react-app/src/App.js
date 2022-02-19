@@ -10,7 +10,9 @@ import "./App.css";
 // import Calculator from "./components/temperature/Calculator";
 // import Container from "./components/Container";
 // import HookTest from "./components/HookTest";
-import KForm from "./components/KForm";
+// import KForm from "./components/KForm";
+// import MouseTracker from "./components/render-props/MouseTracker";
+import State from "./components/hook/UseState";
 
 function App() {
   return (
@@ -20,7 +22,8 @@ function App() {
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
-        <KForm />
+        {/* <KForm />*/}
+        {/* <MouseTracker /> */}
         {/* <LifeCycle />
         <NameForm /> */}
         {/* <StateTest count={1} /> */}
@@ -29,9 +32,10 @@ function App() {
         {/* <Clock /> */}
         {/* <CartSample title="购物车" /> */}
         {/* <HookTest />
-        <Container />
-        <Calculator />
-        <a
+        <Container /> */}
+        {/* <Calculator /> */}
+        <State />
+        {/* <a
           className="App-link"
           href="https://reactjs.org"
           target="_blank"

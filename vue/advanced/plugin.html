@@ -14,22 +14,19 @@
       const logger = {
         install(Vue, options) {
           Object.defineProperty(Vue.prototype, "$log", {
-            value: () => console.log("打印日志啦~"),
+            value: (v) => console.log(v),
             configurable: false,
             enumerable: false,
-            writable: false,
           });
         },
       };
 
       Vue.use(logger);
-      console.log(Vue.config.optionMergeStrategies);
-
       new Vue({
         el: document.querySelector("#root"),
-        template: `<h1>hello world</h1>`,
+        template: `<h1>hello world!</h1>`,
         created() {
-          this.$log();
+          this.$log("打印日志啦!");
         },
       });
     </script>
