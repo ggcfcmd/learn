@@ -1,8 +1,28 @@
+# 项目目录结构
+
+src
+  compiler
+  core
+  platform
+  server
+  sfc
+  share
+
+· compiler：包含Vue中所有编译相关的功能，模板解析成AST、语法树的优化、template转化为render()函数（其中做了一些优化节流）
+· core：vue核心代码 包括内置组件、全局api封装、vue实例化、观察者模式、虚拟dom、工具函数等
+· platform：跨平台代码 其下有两个文件 web（浏览器） weex（native）
+· server：服务端渲染（SSR）
+· sfc：vue文件的解析器（Single File Component）
+· share：共享工具方法（utils）
+
+
+# Vue源码入口
+
 src/core/instance/index.js
 
 ```js
-// 为什么这里使用函数对象而非class？
-// 除了可读性更好之外，后续会在Vue的prototype上进行拓展，用函数对象更方便拓展和维护
+// Q：为什么这里使用函数对象而非class？
+// A：除了可读性更好之外，后续会在Vue的prototype上进行拓展，用函数对象更方便拓展和维护
 function Vue(options) {
   if (process.env.NODE_ENV !== "production" && !(this instanceof Vue)) {
     warn("Vue is a constructor and should be called with the `new` keyword");
@@ -10,14 +30,24 @@ function Vue(options) {
   this._init(options);
 }
 
-// 为何要单独抽离以下几个流程？
-// 不仅仅是初始化流程，还生成了vue必要的参数属性
+// Q：为何要单独抽离以下几个流程？
+// A：不仅仅是初始化流程，还生成了vue必要的参数属性，属于Vue实例的一部分
 initMixin(Vue);
 stateMixin(Vue);
 eventsMixin(Vue);
 lifecycleMixin(Vue);
 renderMixin(Vue);
 ```
+
+# initMixin做了什么 (src/core/instance/init.js)
+
+· 提供_init()方法 将外部传入参数进行合并和挂载
+· 功能性初始化
+      initLifecycle：生命周期相关变量、属性的初始化
+      initEvents：初始化事件
+      initRender：渲染相关（slot、createElement()、defineReactive(defineProperty()的封装)）
+      initInjections：初始化inject，并将其中每个属性都变成响应式的
+      initState：初始化状态（props、methods、data、computed、watch）
 
 # Q1：Vue 中有几种生成 dom 的方式，他们之间有什么区别
 
@@ -37,3 +67,5 @@ beforeCreate 在实例初始化之后，数据观测之前调用
 # Q4：beforeDestroy 和 destroyed 之间做了什么，二者都有什么区别？
 
 beforeDestroy 在实例销毁前触发，在这一步时实例仍完全可用，触发之后就开始切断实例与父组件的依赖关系，销毁所有子实例，解绑实例中所有指令，移除实例中所有监听器，最后销毁自己，然后触发 destroyed，当触发 destroyed 时，实例已完全不可用
+
+# Q5: 使用vue脚手架新建项目的时候，compiler可以选择 runtime only 模式或者 runtime + compiler 两者有什么区别，在哪个文件做的区分
