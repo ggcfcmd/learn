@@ -46,8 +46,13 @@ renderMixin(Vue);
       initLifecycle：生命周期相关变量、属性的初始化
       initEvents：初始化事件
       initRender：渲染相关（slot、createElement()、defineReactive(defineProperty()的封装)）
+      · 触发 beforeCreate 生命周期
       initInjections：初始化inject，并将其中每个属性都变成响应式的
       initState：初始化状态（props、methods、data、computed、watch）
+          initProps：
+              · 对于属性进行响应式处理
+              · 通过proxy()方法去掉 '_props' 的中间层，可以直接通过vm.xxx访问props属性
+          （data与props类似，methods、computed、watch也是初始化逻辑）
 
 # Q1：Vue 中有几种生成 dom 的方式，他们之间有什么区别
 
@@ -69,3 +74,6 @@ beforeCreate 在实例初始化之后，数据观测之前调用
 beforeDestroy 在实例销毁前触发，在这一步时实例仍完全可用，触发之后就开始切断实例与父组件的依赖关系，销毁所有子实例，解绑实例中所有指令，移除实例中所有监听器，最后销毁自己，然后触发 destroyed，当触发 destroyed 时，实例已完全不可用
 
 # Q5: 使用vue脚手架新建项目的时候，compiler可以选择 runtime only 模式或者 runtime + compiler 两者有什么区别，在哪个文件做的区分
+
+# Q6：props 和 data 是如何将属性挂载到 vm 实例上的？
+在执行 initState() 时执行了 initProps() 其中利用proxy()将vm做了一层代理，可以直接访问原本在vm._props上的属性值，即去掉了props的中间层，使得获取data属性和props属性的行为一致（vm._props.xxx => vm.props）
