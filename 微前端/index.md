@@ -53,19 +53,70 @@
 
 · JS污染解决方案（沙盒环境）：
 
+1.diff方法（兼容IE） 当子页面加载到父类的基座中时，维护一个基于父页面的parentMap散列表，在子页面渲染之前，将当前window上的变量都存储在这个map上。同时维护一个基于子页面的childMap散列表，在子页面渲染前将childMap中维护的属性赋值给window，（子页面中间各种操作window，此处省略若干字），当从子应用跳转回父应用时，将window和parentMap中属性进行对比，如果两者不一样，说明这个属性在子应用中更改过，存储到childMap中，再从parentMap中取值还原，就实现了属性的隔离（即在不同的作用域中维护其相应的属性）
 ```js
 class Sandbox {
     constructor() {
-        this.cacheMy = {};   // 子类缓存
-        this.cacheBeforeWindow = {};    // 父类缓存
+        this.cacheMy = new Map();   // 子类缓存
+        this.cacheBeforeWindow = new Map();   // 父类缓存
     }
 
-    showPage() {
-        
+    // 加载子页面 
+    loadChildPage() {
+        // 首先将当前window下的属性存储起来
+        this.cacheBeforeWindow.clear();
+        Object.keys(window).forEach(item => {
+            this.cacheBeforeWindow.set(item, window[item]);
+        });
+        // 将子页面中的特定属性赋值给window（首次加载是没有的）
+        for (let item of this.cacheMy.keys()) {
+            window[item] = this.cacheMy.get(item);
+        };
     }
 
-    hidePage() {
-
+    // 从子页面回到父页面
+    leaveChildPage() {
+        Object.keys(window).forEach(item => {
+            // 当前window属性和父页面缓存中属性进行对比 如果有不同的属性 说明这个属性在子应用中被修改了 需要维护到子应用缓存中
+            if (window[item] !== this.cacheBeforeWindow.get(item)) {
+                // 将属性添加到子应用缓存中
+                this.cacheMy.set(item, window[item]);
+                // 还原父页面缓存中的属性
+                window[item] = this.cacheBeforeWindow.get(item);
+            }
+        });
     }
-} 
+}
+
+const diffSandbox = new Sandbox();
+window.a = 1;
+diffSandbox.loadChildPage();
+console.log(window.a);
+window.a = 2;
+diffSandbox.leaveChildPage();
+console.log(window.a);
+diffSandbox.loadChildPage();
+console.log(window.a);
+```
+
+2. proxy代理（不兼容IE）：监听set和get方法，根据路由进行对应windos属性或方法的存取
+
+```js
+const windowMap = new Map();    // 管理（路由-window对象）键值对的map
+const resertWindow = {};    // window对象的初始化实例
+
+let routerUrl = '';    // 路由
+
+const handler = {
+    get: function(obj, prop) {
+        const tempWindow = windowMap.get(routerUrl);
+        console.log('cur windowMap log:', tempWindow, 'cur routerUrl log:', routerUrl);
+        return tempWindow[prop];
+    },
+    set: function(obj, prop, value) {
+        if (!windowMap.has(routerUrl)) {
+            
+        }
+    }
+}
 ```
