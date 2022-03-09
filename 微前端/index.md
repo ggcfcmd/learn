@@ -105,18 +105,25 @@ console.log(window.a);
 const windowMap = new Map();    // 管理（路由-window对象）键值对的map
 const resertWindow = {};    // window对象的初始化实例
 
-let routerUrl = '';    // 路由
+let routerUrl = '';    // 当前路由
 
 const handler = {
     get: function(obj, prop) {
+        // 先取到当前路由对应的内存对象 再返回相应属性
         const tempWindow = windowMap.get(routerUrl);
         console.log('cur windowMap log:', tempWindow, 'cur routerUrl log:', routerUrl);
         return tempWindow[prop];
     },
     set: function(obj, prop, value) {
+        // 空值处理
         if (!windowMap.has(routerUrl)) {
-            
+            windowMap.set(routerUrl, JSON.parse(JSON.stringify(resertWindow)));     
         }
+        // 从当前路由对应的缓存对象中获取对应的属性
+        const tempWindow = windowMap.get(routerUrl);
+        tempWindow[prop] = value;
     }
 }
 ```
+
+3. iframe自带css和js沙箱隔离（有点low）
