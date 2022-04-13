@@ -78,6 +78,7 @@ beforeDestroy 在实例销毁前触发，在这一步时实例仍完全可用，
 
 ## Q6：props 和 data 是如何将属性挂载到 vm 实例上的？
 
+在initState()中分别调用initData()和initProps()来将属性挂载到vm实例上
 在执行 initState() 时执行了 initProps() 其中利用 proxy()将 vm 做了一层代理，可以直接访问原本在 vm.\_props 上的属性值，即去掉了 props 的中间层，使得获取 data 属性和 props 属性的行为一致（vm.\_props.xxx => vm.props）
 
 # stateMixin 做了什么 (src/core/instance/state.js)
