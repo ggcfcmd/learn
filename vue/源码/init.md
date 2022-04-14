@@ -76,12 +76,12 @@ beforeDestroy 在实例销毁前触发，在这一步时实例仍完全可用，
 
 ## Q5: 使用 vue 脚手架新建项目的时候，compiler 可以选择 runtime only 模式或者 runtime + compiler 两者有什么区别，在哪个文件做的区分
 
-在runtime模块有一个简易版本的$mount()方法（src/platforms/web/runtime/index.js），用来处理已经编译好的代码，对于需要编译的代码，
+在 runtime 模块有一个简易版本的$mount()方法（src/platforms/web/runtime/index.js），用来处理已经编译好的代码，对于需要编译(el、template)的代码，
 在compiler模块通过升级版的$mount()方法处理（src/platforms/web/entry-runtime-with-compiler.js）
 
 ## Q6：props 和 data 是如何将属性挂载到 vm 实例上的？
 
-在initState()中分别调用initData()和initProps()来将属性挂载到vm实例上
+在 initState()中分别调用 initData()和 initProps()来将属性挂载到 vm 实例上
 在执行 initState() 时执行了 initProps() 其中利用 proxy()将 vm 做了一层代理，可以直接访问原本在 vm.\_props 上的属性值，即去掉了 props 的中间层，使得获取 data 属性和 props 属性的行为一致（vm.\_props.xxx => vm.props）
 
 # stateMixin 做了什么 (src/core/instance/state.js)
