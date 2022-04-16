@@ -54,32 +54,28 @@ initProps：
 （data 与 props 类似，methods、computed、watch 也是初始化逻辑）
 initProvide：初始化 provide
 · 触发 created 生命周期
+· 执行$mount()
 
-## Q1：Vue 中有几种生成 dom 的方式，他们之间有什么区别
+## Q：Vue 中有几种生成 dom 的方式，他们之间有什么区别
 
 两种：<template></template>模板 和 render()函数
 无论用哪种方式去写，最后都会转换成 render()函数的形式，建议使用 template 模板的形式去写，因为在 compiler 模块中 template 转换成 render()函数时会有一些优化代码，直接写 render()函数会跳过这些优化
 
-## Q2：beforeCreate 和 created 之间做了什么 / 二者都有什么区别？
+## Q：beforeCreate 和 created 之间做了什么 / 二者都有什么区别？
 
 beforeCreate 在实例初始化之后，数据观测之前调用
 在两个钩子之间初始化了 Inject、Provide、props、data、methods、watch 以及 computed
 所以当 created 被触发时，实例已经具备了数据侦听、计算属性、方法、事件的回调函数等功能
 
-## Q3：为什么 vm 实例中 data 是函数，而 component 是对象
+## Q：为什么 vm 实例中 data 是函数，而 component 是对象
 
 因为如果 data 是对象，当两个不同实例中有同名属性，修改其中任意一个就会影响到所有属性，用函数会生成一个新的实例，做了一层隔离，解决了这个问题，component 中本身就是用的一个组件，只是根据传参不同对应的状态也不同
 
-## Q4：beforeDestroy 和 destroyed 之间做了什么，二者都有什么区别？
+## Q：beforeDestroy 和 destroyed 之间做了什么，二者都有什么区别？
 
 beforeDestroy 在实例销毁前触发，在这一步时实例仍完全可用，触发之后就开始切断实例与父组件的依赖关系，销毁所有子实例，解绑实例中所有指令，移除实例中所有监听器，最后销毁自己，然后触发 destroyed，当触发 destroyed 时，实例已完全不可用
 
-## Q5: 使用 vue 脚手架新建项目的时候，compiler 可以选择 runtime only 模式或者 runtime + compiler 两者有什么区别，在哪个文件做的区分
-
-在 runtime 模块有一个简易版本的$mount()方法（src/platforms/web/runtime/index.js），用来处理已经编译好的代码，对于需要编译(el、template)的代码，
-在compiler模块通过升级版的$mount()方法处理（src/platforms/web/entry-runtime-with-compiler.js）
-
-## Q6：props 和 data 是如何将属性挂载到 vm 实例上的？
+## Q：props 和 data 是如何将属性挂载到 vm 实例上的？
 
 在 initState()中分别调用 initData()和 initProps()来将属性挂载到 vm 实例上
 在执行 initState() 时执行了 initProps() 其中利用 proxy()将 vm 做了一层代理，可以直接访问原本在 vm.\_props 上的属性值，即去掉了 props 的中间层，使得获取 data 属性和 props 属性的行为一致（vm.\_props.xxx => vm.props）
@@ -92,7 +88,7 @@ beforeDestroy 在实例销毁前触发，在这一步时实例仍完全可用，
 · 挂载 $data
 · 挂载 $props
 
-## Q7：$set 本质上做了什么？有什么副作用么？该如何避免使用？
+## Q：$set 本质上做了什么？有什么副作用么？该如何避免使用？
 
 · $set 在响应式对象中添加一个属性，并保证新增的这个属性也是响应式的。set 方法在向对象上注册响应式属性之前做了一些前置工作：类型判断、判断要新增的属性是否已经在对象上了，即需要遍历对象，当对象比较庞大时会有性能损耗。最好在初始化对象时就注册需要的属性
 
@@ -102,7 +98,7 @@ beforeDestroy 在实例销毁前触发，在这一步时实例仍完全可用，
 · 挂载 $forceupdate
 · 挂载 $destroy (期间触发 beforeDestroy 和 destory)
 
-## Q8：beforeDestroy 和 destroyed 期间做了什么？两者有什么区别？
+## Q：beforeDestroy 和 destroyed 期间做了什么？两者有什么区别？
 
 beforeDestroy 触发后开始从当前实例的 parent 上将自身销毁，并在当前渲染树上销毁自身。beforeDestroy 触发时实例仍完全可用，destroyed 触发时实例已销毁。destroyed 触发后会解绑实例上所有指令、移除所有事件监听器、销毁所有子实例
 
@@ -111,7 +107,7 @@ beforeDestroy 触发后开始从当前实例的 parent 上将自身销毁，并�
 · 挂载$nextTick
 · 挂载\_render()
 
-## Q9：$nextTick 功能是什么？怎么实现的？使用时有什么需要注意的点？
+## Q：$nextTick 功能是什么？怎么实现的？使用时有什么需要注意的点？
 
 · nextTick 将回调函数延迟到下次 dom 更新后执行；
 · Promise.then()、MutationObserver()、setImmediate、setTimeout 四种实现方案从左到右依次降级处理
