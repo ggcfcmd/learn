@@ -40,21 +40,24 @@ renderMixin(Vue);
 
 # initMixin 做了什么 (src/core/instance/init.js)
 
-· 提供\_init()方法 将外部传入参数进行合并和挂载
-· 功能性初始化
-initLifecycle：生命周期相关变量、属性的初始化
-initEvents：初始化事件
-initRender：渲染相关（slot、createElement()、defineReactive(defineProperty()的封装)）
-· 触发 beforeCreate 生命周期
-initInjections：初始化 inject，并将其中每个属性都变成响应式的
-initState：初始化状态（props、methods、data、computed、watch）
-initProps：
-· 对于属性进行响应式处理
-· 通过 proxy()方法去掉 '\_props' 的中间层，可以直接通过 vm.xxx 访问 props 属性
+1. 提供\_init()方法 将外部传入参数进行合并和挂载
+2. 功能性初始化
+3. initLifecycle：生命周期相关变量、属性的初始化
+4. initEvents：初始化事件
+5. initRender：渲染相关（slot、createElement()、defineReactive(defineProperty()的封装)）
+  5.1 有关createElement()
+    5.1.1 vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false) 用于由template转成的render()
+    5.1.2 vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true) 用于手写render()
+6. 触发 beforeCreate 生命周期
+7. initInjections：初始化 inject，并将其中每个属性都变成响应式的
+8. initState：初始化状态（props、methods、data、computed、watch）
+9. initProps：
+  9.1 对于属性进行响应式处理
+  9.2 通过 proxy()方法去掉 '\_props' 的中间层，可以直接通过 vm.xxx 访问 props 属性
 （data 与 props 类似，methods、computed、watch 也是初始化逻辑）
-initProvide：初始化 provide
-· 触发 created 生命周期
-· 执行$mount()
+10. initProvide：初始化 provide
+11. 触发 created 生命周期
+12. 执行$mount()
 
 ## Q：Vue 中有几种生成 dom 的方式，他们之间有什么区别
 
