@@ -37,4 +37,9 @@ vue 在执行$mount()时会将当前挂载的节点替换为我们根据虚拟�
 ## _update()做了什么？
 将vnode转换成真实dom节点
 
-初始化实例、每次实例变更的时候都会调用
+初始化实例、每次实例变更的时候都会调用（入口：src/core/instance/lifecycle.js initLifecycle）
+
+1. 调用 vm.__patch__()
+2. 调用 createPatchFunction()
+3. 调用 patch()
+4. 调用 createElm() 重点：通过虚拟节点创建真实dom，并且把自己插入到父节点中
