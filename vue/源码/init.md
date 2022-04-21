@@ -45,16 +45,16 @@ renderMixin(Vue);
 3. initLifecycle：生命周期相关变量、属性的初始化
 4. initEvents：初始化事件
 5. initRender：渲染相关（slot、createElement()、defineReactive(defineProperty()的封装)）
-  5.1 有关createElement()
-    5.1.1 vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false) 用于由template转成的render()
-    5.1.2 vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true) 用于手写render()
+   5.1 有关 createElement()
+   5.1.1 vm.\_c = (a, b, c, d) => createElement(vm, a, b, c, d, false) 用于由 template 转成的 render()
+   5.1.2 vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true) 用于手写 render()
 6. 触发 beforeCreate 生命周期
 7. initInjections：初始化 inject，并将其中每个属性都变成响应式的
 8. initState：初始化状态（props、methods、data、computed、watch）
 9. initProps：
-  9.1 对于属性进行响应式处理
-  9.2 通过 proxy()方法去掉 '\_props' 的中间层，可以直接通过 vm.xxx 访问 props 属性
-（data 与 props 类似，methods、computed、watch 也是初始化逻辑）
+   9.1 对于属性进行响应式处理
+   9.2 通过 proxy()方法去掉 '\_props' 的中间层，可以直接通过 vm.xxx 访问 props 属性
+   （data 与 props 类似，methods、computed、watch 也是初始化逻辑）
 10. initProvide：初始化 provide
 11. 触发 created 生命周期
 12. 执行$mount()
@@ -97,7 +97,7 @@ beforeDestroy 在实例销毁前触发，在这一步时实例仍完全可用，
 
 # lifecycleMixin 做了什么 (src/core/instance/lifecycle.js)
 
-· 挂载 \_update (vnode、**patch**)
+· 挂载 \_update (vnode、\_\_patch\_\_)
 · 挂载 $forceupdate
 · 挂载 $destroy (期间触发 beforeDestroy 和 destory)
 
@@ -112,7 +112,9 @@ beforeDestroy 触发后开始从当前实例的 parent 上将自身销毁，并�
 
 ## Q：$nextTick 功能是什么？怎么实现的？使用时有什么需要注意的点？
 
-· nextTick 将回调函数延迟到下次 dom 更新后执行；
+在下次 dom 更新循环之后执行延迟回调
+
+· nextTick 将回调函数延迟到下次 dom 更新后执行；（ps：nextTick 本身并不会监听 dom 的更新，而是将回调函数存储到一个 list 中，在 dom 更新完成后来清空这个 list，有点类似于微任务的任务队列）
 · Promise.then()、MutationObserver()、setImmediate、setTimeout 四种实现方案从左到右依次降级处理
 · nextTick 中的回调不能有引起 dom 变更的操作，否则会造成死循环
 
