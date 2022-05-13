@@ -105,8 +105,17 @@ export function setUnloadMaxTime(time, dieOnTimeout, warningMillis) {
   };
 }
 
+/**
+ * 在合理的时间内执行生命周期函数，真正执行生命周期函数的地方，并将函数的执行结果resolve出去
+ * @export
+ * @param {*} appOrParcel => app
+ * @param {*} lifecycle => 生命周期函数名
+ * @returns
+ */
 export function reasonableTime(appOrParcel, lifecycle) {
+  // 应用的超时配置
   const timeoutConfig = appOrParcel.timeouts[lifecycle];
+  // 超时警告
   const warningPeriod = timeoutConfig.warningMillis;
   const type = objectType(appOrParcel);
 
@@ -114,6 +123,7 @@ export function reasonableTime(appOrParcel, lifecycle) {
     let finished = false;
     let errored = false;
 
+    // 在真正执行生命周期函数时向子应用传递props，之前执行loadApp时props不会传递到子应用
     appOrParcel[lifecycle](getProps(appOrParcel))
       .then((val) => {
         finished = true;

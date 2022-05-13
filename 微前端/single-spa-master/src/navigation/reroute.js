@@ -340,12 +340,15 @@ export function reroute(pendingPromises = [], eventArguments) {
  */
 function tryToBootstrapAndMount(app, unmountAllPromise) {
   if (shouldBeActive(app)) {
+    // 第一次判断为true 才会执行初始化
     return toBootstrapPromise(app).then((app) =>
       unmountAllPromise.then(() =>
+      // 第二次判断也为true才会挂载
         shouldBeActive(app) ? toMountPromise(app) : app
       )
     );
   } else {
+    // 卸载
     return unmountAllPromise.then(() => app);
   }
 }

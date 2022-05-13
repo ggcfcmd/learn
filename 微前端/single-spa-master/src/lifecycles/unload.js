@@ -74,6 +74,8 @@ export function toUnloadPromise(app) {
   });
 }
 
+// 移除完成，执行一些清理工作，其实就是从appsToUnload中移除当前实例，移除生命周期函数，更改app.status
+// 但应用不是真的被移除，后面再激活时不需要重新去下载资源，只是做一些状态上的变更
 function finishUnloadingApp(app, unloadInfo) {
   delete appsToUnload[toName(app)];
 
