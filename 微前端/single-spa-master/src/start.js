@@ -5,6 +5,7 @@ import { isInBrowser } from "./utils/runtime-environment.js";
 
 let started = false;
 
+// 调用start之前，应用会被加载，但不会初始化、挂载和卸载，有了start可以更好的控制应用的性能
 export function start(opts) {
   started = true;
   if (opts && opts.urlRerouteOnly) {
@@ -20,6 +21,7 @@ export function isStarted() {
 }
 
 if (isInBrowser) {
+  // reigisterApplication之后如果一直没有调用start，在5000ms之后给出警告提示
   setTimeout(() => {
     if (!started) {
       console.warn(

@@ -91,10 +91,14 @@ function urlReroute() {
   reroute([], arguments);
 }
 
+// 增强原生pushstate和replacestate方法，除了原生的操作历史记录，还会调用reroute
 function patchedUpdateState(updateState, methodName) {
   return function () {
+    // 当前url
     const urlBefore = window.location.href;
+    // pushstate或者replacestate的执行结果
     const result = updateState.apply(this, arguments);
+    // pushstate或者replacestate执行后的url地址
     const urlAfter = window.location.href;
 
     if (!urlRerouteOnly || urlBefore !== urlAfter) {
@@ -136,12 +140,15 @@ function createPopStateEvent(state, originalMethodName) {
   return evt;
 }
 
+// 监听路由变化
 if (isInBrowser) {
   // We will trigger an app change for any routing events.
   window.addEventListener("hashchange", urlReroute);
   window.addEventListener("popstate", urlReroute);
 
   // Monkeypatch addEventListener so that we can ensure correct timing
+  // 扩展原生的addEventListener和removeEventListener方法
+  // 每次注册事件和事件处理函数都会将事件和处理函数保存下来，当然移除时也会做删除
   const originalAddEventListener = window.addEventListener;
   const originalRemoveEventListener = window.removeEventListener;
   window.addEventListener = function (eventName, fn) {

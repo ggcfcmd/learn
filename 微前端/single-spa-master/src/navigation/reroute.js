@@ -71,7 +71,7 @@ export function reroute(pendingPromises = [], eventArguments) {
     oldUrl = currentUrl,
     newUrl = (currentUrl = window.location.href);
 
-    // 是否已执行start()方法
+    // 是否已执行start()方法 如果未执行start() 应用会被加载，但不会初始化、挂载、卸载，优化性能
   if (isStarted()) {
     // 已执行
     appChangeUnderway = true;
