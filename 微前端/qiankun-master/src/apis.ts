@@ -23,12 +23,14 @@ const defaultUrlRerouteOnly = true;
 
 const frameworkStartedDefer = new Deferred<void>();
 
+// 低版本浏览器兼容
 const autoDowngradeForLowVersionBrowser = (configuration: FrameworkConfiguration): FrameworkConfiguration => {
   const { sandbox, singular } = configuration;
+  // 样式沙箱
   if (sandbox) {
     if (!window.Proxy) {
       console.warn('[qiankun] Miss window.Proxy, proxySandbox will degenerate into snapshotSandbox');
-
+      // 快照沙箱不支持非singular模式
       if (singular === false) {
         console.warn(
           '[qiankun] Setting singular as false may cause unexpected behavior while your browser not support window.Proxy',
@@ -57,15 +59,24 @@ export function registerMicroApps<T extends ObjectType>(
   unregisteredApps.forEach((app) => {
     const { name, activeRule, loader = noop, props, ...appConfig } = app;
 
+    // 调用single-spa的registerApplication方法注册微应用
     registerApplication({
+      // 子应用名称
       name,
+      // 子应用的加载方法
       app: async () => {
         loader(true);
         await frameworkStartedDefer.promise;
 
         // 核心：加载子应用，各种处理，返回bootstrap、mount、unmount、update这几个生命周期
         const { mount, ...otherMicroAppConfigs } = (
-          await loadApp({ name, props, ...appConfig }, frameworkConfiguration, lifeCycles)
+          await loadApp(
+            // 子应用的配置信息
+            { name, props, ...appConfig },
+            // start 方法执行时设置的配置对象
+            frameworkConfiguration,
+            // 注册子应用时提供的全局生命周期对象
+            lifeCycles)
         )();
 
         return {
@@ -73,7 +84,9 @@ export function registerMicroApps<T extends ObjectType>(
           ...otherMicroAppConfigs,
         };
       },
+      // 子应用的激活条件
       activeWhen: activeRule,
+      // 传递给子应用的props
       customProps: props,
     });
   });
@@ -199,6 +212,7 @@ export function loadMicroApp<T extends ObjectType>(
 
 // 启动qiankun
 export function start(opts: FrameworkConfiguration = {}) {
+  // qiankun 框架默认开启预加载、单例模式、样式沙箱
   frameworkConfiguration = { prefetch: true, singular: true, sandbox: true, ...opts };
   const {
     prefetch,
@@ -208,7 +222,9 @@ export function start(opts: FrameworkConfiguration = {}) {
     ...importEntryOpts
   } = frameworkConfiguration;
 
+  // 预加载
   if (prefetch) {
+    // 执行预加载策略，参数分别为子应用列表、预加载策略、{ fetch、getPublicPath、getTemplate }
     doPrefetchStrategy(microApps, prefetch, importEntryOpts);
   }
 
