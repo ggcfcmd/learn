@@ -246,7 +246,9 @@ export async function loadApp<T extends ObjectType>(
   configuration: FrameworkConfiguration = {},
   lifeCycles?: FrameworkLifeCycles<T>,
 ): Promise<ParcelConfigObjectGetter> {
+  // 子应用的入口和名称
   const { entry, name: appName } = app;
+  // 实例 id
   const appInstanceId = genAppInstanceIdByName(appName);
 
   const markName = `[qiankun] App ${appInstanceId} Loading`;
@@ -254,6 +256,7 @@ export async function loadApp<T extends ObjectType>(
     performanceMark(markName);
   }
 
+  // 配置信息
   const {
     singular = false,
     sandbox = true,
@@ -263,17 +266,26 @@ export async function loadApp<T extends ObjectType>(
   } = configuration;
 
   // get the entry html content and script executor
+  /***
+   * 获取子应用的入口 html 内容和脚本执行器
+   * template 是 link 替换为 style 后的 template
+   * execScripts 是让 JS 代码(scripts)在指定上下文中运行
+   * assetPublicPath 是静态资源地址
+   */
   const { template, execScripts, assetPublicPath } = await importEntry(entry, importEntryOpts);
 
   // as single-spa load and bootstrap new app parallel with other apps unmounting
   // (see https://github.com/CanopyTax/single-spa/blob/master/src/navigation/reroute.js#L74)
   // we need wait to load the app until all apps are finishing unmount in singular mode
+  // single-spa
   if (await validateSingularMode(singular, app)) {
     await (prevAppUnmountedDeferred && prevAppUnmountedDeferred.promise);
   }
 
+  // 用一个容器元素包裹子应用入口 html 模板，appContent = `<div id="__qiankun_microapp_wrapper_for_${appInstanceId}__" data-name="${appName}">${template}</div>`
   const appContent = getDefaultTplWrapper(appInstanceId)(template);
 
+  // 是否严格样式隔离
   const strictStyleIsolation = typeof sandbox === 'object' && !!sandbox.strictStyleIsolation;
 
   if (process.env.NODE_ENV === 'development' && strictStyleIsolation) {
@@ -281,8 +293,9 @@ export async function loadApp<T extends ObjectType>(
       "[qiankun] strictStyleIsolation configuration will be removed in 3.0, pls don't depend on it or use experimentalStyleIsolation instead!",
     );
   }
-
+  // 实验性的样式隔离，后面就叫 scoped css，和严格样式隔离不能同时开启，如果开启了严格样式隔离，则scoped css就为false，强制关闭
   const scopedCSS = isEnableScopedCSS(sandbox);
+  // 将 appContent 有字符串模板转换为 html dom 元素，如果需要开启样式严格隔离，则将 appContent 的子元素即
   let initialAppWrapperElement: HTMLElement | null = createElement(
     appContent,
     strictStyleIsolation,

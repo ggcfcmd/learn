@@ -95,6 +95,15 @@ export function registerMicroApps<T extends ObjectType>(
 const appConfigPromiseGetterMap = new Map<string, Promise<ParcelConfigObjectGetter>>();
 const containerMicroAppsMap = new Map<string, MicroApp[]>();
 
+/**
+ * 手动加载一个子应用，通过 single-spa 的 mountRootParcel api 实现的，返回子应用实例
+ * @export
+ * @template T
+ * @param {LoadableApp<T>} app
+ * @param {(FrameworkConfiguration & { autoStart?: boolean })} [configuration]
+ * @param {FrameworkLifeCycles<T>} [lifeCycles]
+ * @returns {MicroApp}
+ */
 export function loadMicroApp<T extends ObjectType>(
   app: LoadableApp<T>,
   configuration?: FrameworkConfiguration & { autoStart?: boolean },

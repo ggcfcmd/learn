@@ -17,6 +17,7 @@ declare global {
 }
 
 // RIC and shim for browsers setTimeout() without it
+// 通过时间切片的方式去加载静态资源，在浏览器空闲时去执行回调函数，避免浏览器卡顿
 const requestIdleCallback =
   window.requestIdleCallback ||
   function requestIdleCallback(cb: CallableFunction) {
@@ -63,7 +64,7 @@ function prefetch(entry: Entry, opts?: ImportEntryOpts): void {
 // 在第一个子应用挂载之后开始加载apps中指定的子应用的静态资源
 // 通过监听single-spa提供的single-spa:first-mount 事件来实现，该事件在第一个子应用挂载之后触发
 function prefetchAfterFirstMounted(apps: AppMetadata[], opts?: ImportEntryOpts): void {
-  // 监听事件
+  // 监听 single-spa:first-mount 事件
   window.addEventListener('single-spa:first-mount', function listener() {
     const notLoadedApps = apps.filter((app) => getAppStatus(app.name) === NOT_LOADED);
 
@@ -75,7 +76,7 @@ function prefetchAfterFirstMounted(apps: AppMetadata[], opts?: ImportEntryOpts):
     // 遍历预加载子应用的静态资源
     notLoadedApps.forEach(({ entry }) => prefetch(entry, opts));
 
-    // 加载完之后移除监听
+    // 加载完之后移除监听 single-spa:first-mount 事件
     window.removeEventListener('single-spa:first-mount', listener);
   });
 }
