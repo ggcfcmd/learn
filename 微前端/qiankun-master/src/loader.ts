@@ -99,7 +99,8 @@ function createElement(
     if (!attr) {
       appElement.setAttribute(css.QiankunCSSRewriteAttr, appInstanceId);
     }
-
+    // 通过scoped css的方式隔离样式
+    // 当前只处理style这种内联标签的情况，不支持<link />标签动态引入
     const styleNodes = appElement.querySelectorAll('style') || [];
     forEach(styleNodes, (stylesheetElement: HTMLStyleElement) => {
       css.process(appElement!, stylesheetElement, appInstanceId);
@@ -241,6 +242,7 @@ let prevAppUnmountedDeferred: Deferred<void>;
 
 export type ParcelConfigObjectGetter = (remountContainer?: string | HTMLElement) => ParcelConfigObject;
 
+
 export async function loadApp<T extends ObjectType>(
   app: LoadableApp<T>,
   configuration: FrameworkConfiguration = {},
@@ -277,7 +279,7 @@ export async function loadApp<T extends ObjectType>(
   // as single-spa load and bootstrap new app parallel with other apps unmounting
   // (see https://github.com/CanopyTax/single-spa/blob/master/src/navigation/reroute.js#L74)
   // we need wait to load the app until all apps are finishing unmount in singular mode
-  // single-spa
+  // single-spa 的限制，加载、初始化和卸载不能同时进行，必须等卸载完成以后才可以进行加载，这个promise会在子应用卸载完成后被resolve，在后面可以看到
   if (await validateSingularMode(singular, app)) {
     await (prevAppUnmountedDeferred && prevAppUnmountedDeferred.promise);
   }
@@ -295,7 +297,7 @@ export async function loadApp<T extends ObjectType>(
   }
   // 实验性的样式隔离，后面就叫 scoped css，和严格样式隔离不能同时开启，如果开启了严格样式隔离，则scoped css就为false，强制关闭
   const scopedCSS = isEnableScopedCSS(sandbox);
-  // 将 appContent 有字符串模板转换为 html dom 元素，如果需要开启样式严格隔离，则将 appContent 的子元素即
+  // 将 appContent 有字符串模板转换为 html dom 元素，如果需要开启样式严格隔离，则将 appContent 的子元素即子应用入口模板用 shadow dom 包裹起来，以达到样式严格隔离的目的
   let initialAppWrapperElement: HTMLElement | null = createElement(
     appContent,
     strictStyleIsolation,
@@ -303,6 +305,7 @@ export async function loadApp<T extends ObjectType>(
     appInstanceId,
   );
 
+  // 主应用装载子应用的容器节点
   const initialContainer = 'container' in app ? app.container : undefined;
   const legacyRender = 'render' in app ? app.render : undefined;
 
@@ -312,6 +315,7 @@ export async function loadApp<T extends ObjectType>(
   // 确保每次应用加载前容器 dom 结构已经设置完毕
   render({ element: initialAppWrapperElement, loading: true, container: initialContainer }, 'loading');
 
+  // 得到一个 getter 函数，通过该函数可以获取 <div id="__qiankun_microapp_wrapper_for_${appInstanceId}__" data-name="${appName}">${template}</div>
   const initialAppWrapperGetter = getAppWrapperGetter(
     appInstanceId,
     !!legacyRender,
