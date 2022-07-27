@@ -30,8 +30,57 @@
       el.innerHTML = count++;
     }
 
-    el.onmousemove = throttle(getUserAction, 2000);
+    el.onmousemove = throttle3(getUserAction, 2000);
 
+    // 时间戳
+    function throttle1(func, interval) {
+      let last = 0;
+
+      return function (...args) {
+        let now = Date.now();
+        if (now - last > interval) {
+          last = now;
+          func.apply(this, args);
+        }
+      };
+    }
+
+    function throttle2(func, interval) {
+      let timer;
+
+      return function (...args) {
+        if (!timer) {
+          timer = setTimeout(() => {
+            func.apply(this, args);
+            timer = null;
+          }, interval);
+        }
+      };
+    }
+
+    function throttle3(func, interval) {
+      let timer;
+      let startTime = Date.now();
+
+      return function (...args) {
+        let curTime = Date.now();
+        clearTimeout(timer);
+        // 还剩下多少时间来执行本次触发函数 用时间间隔减去当前时间和上次执行时间的差值
+        let remaining = interval - (curTime - startTime);
+        // 如果是负数 说明本次触发距离上次触发的时间间隔大于默认时间间隔 此时立即执行
+        if (remaining <= 0) {
+          func.apply(this, args);
+          startTime = Date.now();
+        } else {
+          timer = setTimeout(() => {
+            func.apply(this, args);
+            startTime = Date.now();
+          }, remaining);
+        }
+      };
+    }
+
+    // 忘了之前在哪抄的代码 没看懂 ==！ 好菜
     function throttle(func, wait) {
       let last = null;
       let timeout = null;
