@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bind</title>
+  </head>
+  <body></body>
+  <script>
+    // 1. 返回一个新函数
+    // 2. 返回原函数执行结果
+    // 3. 传参不变
+    Function.prototype.newBind = function (...args) {
+      const _self = this;
+      const newThis = args.shift();
+      const fn = function () {
+        // 考虑 newBind 后返回的函数作为构造函数被 new
+        fn.prototype = Object.create(_self.prototype);
+        return _self.apply(newThis, args);
+      };
+      return fn;
+    };
+  </script>
+</html>

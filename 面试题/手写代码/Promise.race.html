@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Promise.race</title>
+    <style></style>
+  </head>
+  <body></body>
+  <!-- 将多个Promise实例包装成一个新的实例返回，这个实例的结果取决于第一个完成的子实例的决议结果（fulfilled / rejected），其余实例的决议结果不关注 -->
+  <script>
+    Promise.myRace = (arr) => {
+      if (!Array.isArray(arr) || !arr.length) {
+        return Promise.resolve();
+      }
+      return new Promise((resolve, reject) => {
+        arr.forEach((item) => {
+          Promise.resolve(item).then(
+            (v) => {
+              resolve(v);
+            },
+            (r) => {
+              reject(v);
+            }
+          );
+        });
+      });
+    };
+  </script>
+</html>
