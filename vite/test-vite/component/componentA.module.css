@@ -1,0 +1,11 @@
+.footer {
+    width: 200px;
+    height: 200px;
+    background-color: lightblue;
+}
+
+.footer-content {
+    width: 200px;
+    height: 200px;
+    background-color: aquamarine;
+}

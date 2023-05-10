@@ -1,0 +1,11 @@
+{
+  "name": "test-postcss",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "postcss": "^8.4.23",
+    "postcss-cli": "^10.1.0",
+    "postcss-preset-env": "^8.3.2"
+  }
+}
