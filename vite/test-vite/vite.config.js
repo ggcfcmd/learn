@@ -20,8 +20,8 @@ export default defineConfig(({ command, mode }) => {
     const commonEnv = loadEnv('', process.cwd(), '');
     const env = loadEnv(mode, process.cwd(), '');
     console.log('mode log: ', mode);
-    console.log('env log: ', commonEnv);
-    console.log('env log: ', env);
+    // console.log('env log: ', commonEnv);
+    // console.log('env log: ', env);
     return envResolver[command]();
 });
 

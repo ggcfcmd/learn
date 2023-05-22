@@ -5,6 +5,6 @@ console.log('componentACss: ', componentACss);
 console.log('componentALess: ', componentALess);
 
 const divElementA = document.createElement('div');
-divElementA.className = componentACss.footer;
+divElementA.className = componentACss.footerContent;
 
 document.body.appendChild(divElementA);

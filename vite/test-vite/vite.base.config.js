@@ -1,9 +1,22 @@
 import { defineConfig } from "vite";
+// import { ViteAliases } from "vite-aliases";
+import MyViteAliases from './plugins/MyViteAliases';
+import MyCreateHtmlPlugin from './plugins/MyCreateHtmlPlugin';
+import path from "path";
+import { createHtmlPlugin } from 'vite-plugin-html';
+import MyViteMockPlugin from './plugins/MyViteMockPlugin';
+import { viteMockServe } from 'vite-plugin-mock';
 
 const postcssPresetEnv = require("postcss-preset-env");
 
 // 在 defineConfig 内部配置会获得配置项的语法提示
 export default defineConfig({
+    // resolve: {
+    //     alias: {
+    //         "@": path.resolve(__dirname, './src'),
+    //         "@assets": path.resolve(__dirname, './src/assets'),
+    //     }
+    // },
     optimizeDeps: {
         exclude: ['lodash-es'],    // 当遇到 lodash-es 这个依赖的时候不进行依赖预构建
     },
@@ -34,8 +47,40 @@ export default defineConfig({
             }
         },
         devSourcemap: true,   // 文件间的索引，代码如果经过压缩或编译，假设程序出错，会在编译后的位置报错，sourceMap提供一个索引，可以定位到编译前的文件位置，方便排查问题
-        postcss: {
-            plugins: [postcssPresetEnv()]
-        }
-    }
+        // postcss: {
+        //     plugins: [postcssPresetEnv()]
+        // },
+    },
+    build: { // 构建生产包时的一些配置策略
+        rollupOptions: {    // 配置rollup的一些构建策略
+            output: {   // 控制输出
+                // 在 rollup 里面，hash 代表将你的文件名和文件内容进行组合计算得来的结果
+                assetFileNames: "[hash].[name].[ext]"
+            }
+        },
+        assetsInlineLimit: 4096, // 4kb 小于配置体积的静态图片会被转换成base64格式以减少http请求
+        outDir: "dist", // 配置输出目录，默认为 dist
+        assetsDir: 'static', // 配置输出目录中的静态资源目录，默认为 assets
+        emptyOutDir: true   // boolean 清除输出目录中的所有文件 默认为 true
+    },
+    plugins: [
+        // ViteAliases(),  // 只支持 ESmodule
+        MyViteAliases(),
+        // createHtmlPlugin({
+        //     inject: {
+        //         data: {
+        //             title: '帅小伙儿'
+        //         }
+        //     }
+        // })
+        MyCreateHtmlPlugin({
+            inject: {
+                data: {
+                    title: '帅小伙儿'
+                }
+            }
+        }),
+        // viteMockServe()
+        MyViteMockPlugin()
+    ]
 })
