@@ -1,16 +1,7 @@
-console.log("hello world");
+import { forEach } from "lodash";
 
-let str: string = "helloworld";
+const mainArr = [];
 
-console.log("meta", import.meta.env.VITE_PROXY_TARGET);
-
-interface PersonField {
-    name: string;
-    age: number;
-}
-
-function demo(params: PersonField) {
-    console.log("name log :", params.name);
-}
-
-demo({ name: 'shenzn', age: 18 });
+forEach(mainArr, (elm) => {
+    console.log('elm', elm);
+})

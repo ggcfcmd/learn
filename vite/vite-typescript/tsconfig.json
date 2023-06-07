@@ -1,6 +1,9 @@
 {
     "compilerOptions": {
+        "moduleResolution": "nodenext",
         "skipLibCheck": true,  // 是否跳过node_modules目录的检查
-        "module": "ESNext"
+        "module": "ESNext",
+        "lib": ["ES2017", "DOM"],
+        "allowSyntheticDefaultImports": true,
     }
 }
