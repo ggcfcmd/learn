@@ -38,54 +38,56 @@
 优点：每个子应用拥有独立的 script 和 css，可以单独部署
 确定：对之前的子系统改造成本较高，通信复杂
 
-4. 组合式应用路由分发：每个子应用单独打包、部署和运行，只不过需要基于父应用进行路由管理。比如当前路由在/testA，其对应一个子应用A，当路由切换到/testB时（testB也对应着一个子应用B），那么首先会进行子应用A的卸载，完成之后，再去加载子应用B
+4. 组合式应用路由分发：每个子应用单独打包、部署和运行，只不过需要基于父应用进行路由管理。比如当前路由在/testA，其对应一个子应用 A，当路由切换到/testB 时（testB 也对应着一个子应用 B），那么首先会进行子应用 A 的卸载，完成之后，再去加载子应用 B
 
 优点：纯前端改造，相比于路由式，无刷新，体验感良好
-缺点：需要解决样式冲突、JS污染问题、应用间通信
+缺点：需要解决样式冲突、JS 污染问题、应用间通信
 
 ## 目前采用的方案
 
 目前微前端采用的技术方案是 组合式应用路由开发
 
-· CSS冲突解决方案：
-1. 类似于vue的scoped，打包时对css选择器加上响应的属性，属性的key是一些不重复的hash值，然后使用属性选择器进行选择
-2. 自定义前缀：在开发子模块前，确定一个全局唯一的css前缀，然后在书写过程中统一添加此前缀，或在根root上添加此前缀，使用less/sass作用域嵌套即可解
+· CSS 冲突解决方案：
 
-· JS污染解决方案（沙盒环境）：
+1. 类似于 vue 的 scoped，打包时对 css 选择器加上响应的属性，属性的 key 是一些不重复的 hash 值，然后使用属性选择器进行选择
+2. 自定义前缀：在开发子模块前，确定一个全局唯一的 css 前缀，然后在书写过程中统一添加此前缀，或在根 root 上添加此前缀，使用 less/sass 作用域嵌套即可解
 
-1.diff方法（兼容IE） 当子页面加载到父类的基座中时，维护一个基于父页面的parentMap散列表，在子页面渲染之前，将当前window上的变量都存储在这个map上。同时维护一个基于子页面的childMap散列表，在子页面渲染前将childMap中维护的属性赋值给window，（子页面中间各种操作window，此处省略若干字），当从子应用跳转回父应用时，将window和parentMap中属性进行对比，如果两者不一样，说明这个属性在子应用中更改过，存储到childMap中，再从parentMap中取值还原，就实现了属性的隔离（即在不同的作用域中维护其相应的属性）
+· JS 污染解决方案（沙盒环境）：
+
+1. diff 方法（兼容 IE） 当子页面加载到父类的基座中时，维护一个基于父页面的 parentMap 散列表，在子页面渲染之前，将当前 window 上的变量都存储在这个 map 上。同时维护一个基于子页面的 childMap 散列表，在子页面渲染前将 childMap 中维护的属性赋值给 window，（子页面中间各种操作 window，此处省略若干字），当从子应用跳转回父应用时，将 window 和 parentMap 中属性进行对比，如果两者不一样，说明这个属性在子应用中更改过，存储到 childMap 中，再从 parentMap 中取值还原，就实现了属性的隔离（即在不同的作用域中维护其相应的属性）
+
 ```js
 class Sandbox {
-    constructor() {
-        this.cacheMy = new Map();   // 子类缓存
-        this.cacheBeforeWindow = new Map();   // 父类缓存
-    }
+  constructor() {
+    this.cacheMy = new Map(); // 子类缓存
+    this.cacheBeforeWindow = new Map(); // 父类缓存
+  }
 
-    // 加载子页面 
-    loadChildPage() {
-        // 首先将当前window下的属性存储起来
-        this.cacheBeforeWindow.clear();
-        Object.keys(window).forEach(item => {
-            this.cacheBeforeWindow.set(item, window[item]);
-        });
-        // 将子页面中的特定属性赋值给window（首次加载是没有的）
-        for (let item of this.cacheMy.keys()) {
-            window[item] = this.cacheMy.get(item);
-        };
+  // 加载子页面
+  loadChildPage() {
+    // 首先将当前window下的属性存储起来
+    this.cacheBeforeWindow.clear();
+    Object.keys(window).forEach((item) => {
+      this.cacheBeforeWindow.set(item, window[item]);
+    });
+    // 将子页面中的特定属性赋值给window（首次加载是没有的）
+    for (let item of this.cacheMy.keys()) {
+      window[item] = this.cacheMy.get(item);
     }
+  }
 
-    // 从子页面回到父页面
-    leaveChildPage() {
-        Object.keys(window).forEach(item => {
-            // 当前window属性和父页面缓存中属性进行对比 如果有不同的属性 说明这个属性在子应用中被修改了 需要维护到子应用缓存中
-            if (window[item] !== this.cacheBeforeWindow.get(item)) {
-                // 将属性添加到子应用缓存中
-                this.cacheMy.set(item, window[item]);
-                // 还原父页面缓存中的属性
-                window[item] = this.cacheBeforeWindow.get(item);
-            }
-        });
-    }
+  // 从子页面回到父页面
+  leaveChildPage() {
+    Object.keys(window).forEach((item) => {
+      // 当前window属性和父页面缓存中属性进行对比 如果有不同的属性 说明这个属性在子应用中被修改了 需要维护到子应用缓存中
+      if (window[item] !== this.cacheBeforeWindow.get(item)) {
+        // 将属性添加到子应用缓存中
+        this.cacheMy.set(item, window[item]);
+        // 还原父页面缓存中的属性
+        window[item] = this.cacheBeforeWindow.get(item);
+      }
+    });
+  }
 }
 
 const diffSandbox = new Sandbox();
@@ -99,31 +101,36 @@ diffSandbox.loadChildPage();
 console.log(window.a);
 ```
 
-2. proxy代理（不兼容IE）：监听set和get方法，根据路由进行对应windos属性或方法的存取
+2. proxy 代理（不兼容 IE）：监听 set 和 get 方法，根据路由进行对应 windos 属性或方法的存取
 
 ```js
-const windowMap = new Map();    // 管理（路由-window对象）键值对的map
-const resertWindow = {};    // window对象的初始化实例
+const windowMap = new Map(); // 管理（路由-window对象）键值对的map
+const resertWindow = {}; // window对象的初始化实例
 
-let routerUrl = '';    // 当前路由
+let routerUrl = ""; // 当前路由
 
 const handler = {
-    get: function(obj, prop) {
-        // 先取到当前路由对应的内存对象 再返回相应属性
-        const tempWindow = windowMap.get(routerUrl);
-        console.log('cur windowMap log:', tempWindow, 'cur routerUrl log:', routerUrl);
-        return tempWindow[prop];
-    },
-    set: function(obj, prop, value) {
-        // 空值处理
-        if (!windowMap.has(routerUrl)) {
-            windowMap.set(routerUrl, JSON.parse(JSON.stringify(resertWindow)));     
-        }
-        // 从当前路由对应的缓存对象中获取对应的属性
-        const tempWindow = windowMap.get(routerUrl);
-        tempWindow[prop] = value;
+  get: function (obj, prop) {
+    // 先取到当前路由对应的内存对象 再返回相应属性
+    const tempWindow = windowMap.get(routerUrl);
+    console.log(
+      "cur windowMap log:",
+      tempWindow,
+      "cur routerUrl log:",
+      routerUrl
+    );
+    return tempWindow[prop];
+  },
+  set: function (obj, prop, value) {
+    // 空值处理
+    if (!windowMap.has(routerUrl)) {
+      windowMap.set(routerUrl, JSON.parse(JSON.stringify(resertWindow)));
     }
-}
+    // 从当前路由对应的缓存对象中获取对应的属性
+    const tempWindow = windowMap.get(routerUrl);
+    tempWindow[prop] = value;
+  },
+};
 ```
 
-3. iframe自带css和js沙箱隔离（有点low）
+3. iframe 自带 css 和 js 沙箱隔离（有点 low）
