@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        span {
+            display: inline-block;
+            width: 50px;
+            height: 25px;
+            background-color: aqua;
+        }
+        span:nth-child(-n+1) {
+            background-color: red;
+        }
+        /* span:nth-last-child(3) {
+            background-color: red;
+        } */
+        /* span:nth-child(0) {
+            background-color: red;
+        } */
+        /* span:first-child {
+            background-color: red;
+        } */
+    </style>
+</head>
+<body>
+    <p>
+        <span>A</span>
+        <span>B</span>
+        <span>C</span>
+    </p>
+</body>
+</html>
