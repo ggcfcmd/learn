@@ -73,3 +73,24 @@ const promise2 = promise1.then(cb1, cb2);
 6.3 如果 onFulfilled 不是函数并且 promise1 的状态为 fulfilled，promise2 以 promise1 的 value 触发 fulfilled（即提供一个默认函数并将 promise1 的 value 透传出去）
 
 6.4 如果 onRejected 不是函数并且 promise1 的状态为 rejected，promise2 以 promise1 的 reason 触发 rejected（即提供一个默认函数并将 promise1 的 reason 透传出去）
+
+7. resolvePromise
+
+```js
+resolvePromise(promise2, x, resolve, reject);
+```
+
+7.1 如果 promise2 和 x 引用同一个对象（即 promise2 === x），以 TypeError 为原因 reject promise2
+
+7.2 如果 x 是一个 promise，去看他当前的状态
+7.2.1 如果 x 处于 pending 状态下，promise2 需要一直处于 pending 状态，直到 x 变成 fulfilled 或 rejected
+7.2.2 如果 x 处于 fulfilled 状态下，promise2 以相同的 value fulfilled
+7.2.2 如果 x 处于 rejected 状态下，promise2 以相同的 reason rejected
+
+7.3 如果 x 是一个 object 或 function
+
+7.3.1 获取 x.then 属性
+
+let then = x.then
+
+7.3.2 如果检索 x.then 属性的过程中出现了异常 e，以 e 为原因 reject promise2
