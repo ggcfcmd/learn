@@ -10,6 +10,9 @@ Promise.allSettled = (promises) => {
     let count = 0;
     let result = [];
     let len = promises.length;
+    if (!len) {
+      resolve([]);
+    }
     promises.forEach((p, i) => {
       Promise.resolve(p)
         .then((res) => {

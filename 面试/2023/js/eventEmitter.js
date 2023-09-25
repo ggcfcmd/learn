@@ -5,7 +5,7 @@ class EventEmitter {
 
   on(name, cb) {
     if (!this.events.name) {
-      this.events.name = [];
+      this.events[name] = [];
     }
     this.events[name].push(cb);
     return this;
@@ -33,6 +33,12 @@ class EventEmitter {
   off(name) {
     delete this.events[name];
   }
-
-  emit() {}
 }
+
+const instance = new EventEmitter();
+
+instance.once("click", (...args) => {
+  console.log(args);
+});
+
+instance.emit("click", 1, 2, 3, [4, 5]);

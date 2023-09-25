@@ -1,9 +1,17 @@
-Function.prototype.myApply = function (thisArg) {
-  const context = thisArg || window;
-  context._fn = this;
-  const args = [...arguments].slice(1);
-  const res = context._fn(...args);
-  delete context._fn;
+Function.prototype.myApply = function (thisArg, ...args) {
+  const context = Object(thisArg) || window;
+  const key = Symbol("_fn");
+  context[key] = this;
+  let res;
+  if (args) {
+    if (!Array.isArray(args)) {
+      throw TypeError("the second arg is not array!");
+    }
+    res = context[key](...args);
+  } else {
+    res = context[key]();
+  }
+  delete context[key];
   return res;
 };
 

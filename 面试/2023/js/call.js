@@ -1,9 +1,15 @@
-Function.prototype.myCall = function (thisArg) {
-  const context = thisArg || window;
-  context._fn = this;
-  const args = [...arguments].slice(1);
-  const res = context._fn(...args);
-  delete context._fn;
+Function.prototype.myCall = function (thisArg, ...args) {
+  const context = Object(thisArg) || window;
+  const key = Symbol("_fn");
+  context[key] = this;
+  // const res = eval("context[key](" + args + ")");
+  let res;
+  if (args) {
+    res = context[key](...args);
+  } else {
+    res = context[key]();
+  }
+  delete context[key];
   return res;
 };
 
